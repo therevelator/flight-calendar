@@ -1,0 +1,35 @@
+/* Copy all the CSS you provided earlier, but remove the body and other general styles */
+#calendar {
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  width: 420px;
+  margin: 0 auto;
+  height: 570px;
+  overflow: hidden;
+  background: var(--card-bg);
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+/* Add all the other calendar-specific CSS rules from your original CSS */
+
+.calendar-cell.outbound-selected {
+  position: relative;
+  border: 2px solid var(--primary-color);
+}
+
+.calendar-cell .selected-mark {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: var(--primary-color);
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
