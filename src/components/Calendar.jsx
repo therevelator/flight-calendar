@@ -44,48 +44,53 @@ const Calendar = ({ flightData, currentDate, onDateSelect, onFlightSelect, isRet
   };
 
   return (
-    <div className="calendar">
-      <div className="calendar-header">
-        <div>Sun</div>
-        <div>Mon</div>
-        <div>Tue</div>
-        <div>Wed</div>
-        <div>Thu</div>
-        <div>Fri</div>
-        <div>Sat</div>
+    <div className="calendar-container">
+      <div className="calendar-nav">
+        {/* ... navigation content ... */}
       </div>
-      <div className="calendar-grid">
-        {weeks.flat().map(({ date, fare }) => (
-          <div
-            key={date.format('YYYY-MM-DD')}
-            className={`calendar-cell 
-              ${fare?.unavailable ? 'unavailable' : ''} 
-              ${date.format('YYYY-MM-DD') === currentDate && isReturnActive ? 'outbound-selected' : ''}`}
-            style={{
-              backgroundColor: fare?.unavailable ? undefined : getBackgroundColor(
-                fare?.price?.value,
-                flightData.outbound.minFare?.price?.value,
-                flightData.outbound.maxFare?.price?.value
-              )
-            }}
-            onClick={(e) => handleCellClick(e, date, fare)}
-          >
-            <div className="date">{date.date()}</div>
-            {!fare?.unavailable && fare?.price && (
-              <>
-                <div className="price">{formatPrice(fare.price)}</div>
-                {fare.departureDate && (
-                  <div className="flight-times">
-                    {formatTime(fare.departureDate)} - {formatTime(fare.arrivalDate)}
-                  </div>
-                )}
-              </>
-            )}
-            {date.format('YYYY-MM-DD') === currentDate && isReturnActive && (
-              <div className="selected-mark">✓</div>
-            )}
-          </div>
-        ))}
+      <div className="calendar">
+        <div className="calendar-header">
+          <div>Sun</div>
+          <div>Mon</div>
+          <div>Tue</div>
+          <div>Wed</div>
+          <div>Thu</div>
+          <div>Fri</div>
+          <div>Sat</div>
+        </div>
+        <div className="calendar-grid">
+          {weeks.flat().map(({ date, fare }) => (
+            <div
+              key={date.format('YYYY-MM-DD')}
+              className={`calendar-cell 
+                ${fare?.unavailable ? 'unavailable' : ''} 
+                ${date.format('YYYY-MM-DD') === currentDate && isReturnActive ? 'outbound-selected' : ''}`}
+              style={{
+                backgroundColor: fare?.unavailable ? undefined : getBackgroundColor(
+                  fare?.price?.value,
+                  flightData.outbound.minFare?.price?.value,
+                  flightData.outbound.maxFare?.price?.value
+                )
+              }}
+              onClick={(e) => handleCellClick(e, date, fare)}
+            >
+              <div className="date">{date.date()}</div>
+              {!fare?.unavailable && fare?.price && (
+                <>
+                  <div className="price">{formatPrice(fare.price)}</div>
+                  {fare.departureDate && (
+                    <div className="flight-times">
+                      {formatTime(fare.departureDate)} - {formatTime(fare.arrivalDate)}
+                    </div>
+                  )}
+                </>
+              )}
+              {date.format('YYYY-MM-DD') === currentDate && isReturnActive && (
+                <div className="selected-mark">✓</div>
+              )}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -94,11 +99,11 @@ const Calendar = ({ flightData, currentDate, onDateSelect, onFlightSelect, isRet
 const getBackgroundColor = (price, minPrice, maxPrice) => {
   if (!price) return 'transparent';
   
-  // Define our color stops
+  // Define our color stops with brighter colors
   const colors = {
-    cheap: '#009338',    // Green for ≤ 50€
-    medium: '#FF9900',   // Orange for ~100€
-    expensive: '#930000' // Red for ≥150€
+    cheap: '#00FF5E',    // Bright green for ≤ 50€
+    medium: '#FFC107',   // Bright amber for ~100€
+    expensive: '#FF3D3D' // Bright red for ≥150€
   };
 
   if (price <= 50) {
@@ -116,7 +121,6 @@ const getBackgroundColor = (price, minPrice, maxPrice) => {
   }
 };
 
-// Add the interpolateColor helper function
 const interpolateColor = (color1, color2, factor) => {
   const hex1 = color1.substring(1);
   const hex2 = color2.substring(1);
@@ -133,7 +137,7 @@ const interpolateColor = (color1, color2, factor) => {
   const g = Math.round(g1 + (g2 - g1) * factor);
   const b = Math.round(b1 + (b2 - b1) * factor);
   
-  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  return `rgba(${r}, ${g}, ${b}, 0.8)`;
 };
 
 const formatPrice = (price) => {

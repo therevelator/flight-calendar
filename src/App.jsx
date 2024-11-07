@@ -169,11 +169,11 @@ function App() {
   const getBackgroundColor = (price, minPrice, maxPrice) => {
     if (!price) return 'transparent';
     
-    // Define our color stops
+    // Define our color stops with brighter colors
     const colors = {
-      cheap: '#009338',    // Green for ≤ 50€
-      medium: '#FF9900',   // Orange for ~100€
-      expensive: '#930000' // Red for ≥150€
+      cheap: '#00FF5E',    // Bright green for ≤ 50€
+      medium: '#FFC107',   // Bright amber for ~100€
+      expensive: '#FF3D3D' // Bright red for ≥150€
     };
 
     if (price <= 50) {
@@ -191,7 +191,7 @@ function App() {
     }
   };
 
-  // Add this helper function for color interpolation
+  // Add some opacity to make it work better with the glass effect
   const interpolateColor = (color1, color2, factor) => {
     const hex1 = color1.substring(1);
     const hex2 = color2.substring(1);
@@ -208,7 +208,8 @@ function App() {
     const g = Math.round(g1 + (g2 - g1) * factor);
     const b = Math.round(b1 + (b2 - b1) * factor);
     
-    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    // Add 80% opacity to work better with glass effect
+    return `rgba(${r}, ${g}, ${b}, 0.8)`;
   };
 
   const formatPrice = (price) => {
@@ -549,15 +550,15 @@ function App() {
 
       <div className="legend">
         <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#009338' }}></div>
+          <div className="legend-color" style={{ backgroundColor: '#00FF5E' }}></div>
           <span>≤ €50</span>
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#FF9900' }}></div>
+          <div className="legend-color" style={{ backgroundColor: '#FFC107' }}></div>
           <span>€100</span>
         </div>
         <div className="legend-item">
-          <div className="legend-color" style={{ backgroundColor: '#930000' }}></div>
+          <div className="legend-color" style={{ backgroundColor: '#FF3D3D' }}></div>
           <span>≥ €150</span>
         </div>
       </div>

@@ -88,9 +88,9 @@ Same as outbound flights, but with origin/destination swapped.
 
 ### 3. Price Color Coding
 The application uses a color-coding system for prices:
-- Green (#009338): ≤ €50
-- Orange (#FF9900): ~€100
-- Red (#930000): ≥ €150
+- Green (#00FF5E): ≤ €50
+- Amber (#FFC107): ~€100
+- Red (#FF3D3D): ≥ €150
 
 ## iOS App Conversion
 
