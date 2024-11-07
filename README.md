@@ -79,6 +79,8 @@ Fetches available outbound flights and their prices.
 ### 2. Return Flights
 ```http
 GET https://www.ryanair.com/api/farfnd/v4/oneWayFares/{destination}/{origin}/cheapestPerDay
+
+openweather api key: 4a832ba19efef92fa016634d4ec736eb
 ```
 
 Fetches available return flights and their prices.

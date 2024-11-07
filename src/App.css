@@ -125,7 +125,8 @@ h1 {
   font-weight: 700;
 }
 
-.calendar {
+.calendar,
+.return-date-picker {
   background: #4a556824;
   backdrop-filter: blur(var(--backdrop-blur));
   -webkit-backdrop-filter: blur(var(--backdrop-blur));
@@ -136,9 +137,15 @@ h1 {
   overflow-anchor: none;
   position: relative;
   z-index: 1;
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
-.calendar-header {
+.calendar-header,
+.return-date-picker .calendar-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   background: var(--background);
@@ -148,13 +155,13 @@ h1 {
   border-bottom: 1px solid var(--border-color);
 }
 
-.calendar-grid {
+.calendar-grid,
+.return-date-picker .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
-  background: var(--border-color);
-  padding: 1px;
-  animation: fadeIn 0.3s ease-out;
+  gap: 2px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 @keyframes fadeIn {
@@ -168,41 +175,41 @@ h1 {
   }
 }
 
-.calendar-cell {
-  aspect-ratio: 1;
-  padding: 0.75rem;
+.calendar-cell,
+.return-date-picker .calendar-cell {
+  min-height: 80px;
+  padding: 0.5rem;
+  font-size: 0.85rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 0.25rem;
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  transition: all 0.3s ease;
+  justify-content: space-between;
+  box-sizing: border-box;
   cursor: pointer;
-  user-select: none; /* Prevent text selection on click */
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
+  transition: all 0.3s ease;
 }
 
-.calendar-cell:hover {
+.calendar-cell:hover,
+.return-date-picker .calendar-cell:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px var(--shadow-color);
   background: var(--hover-bg);
   z-index: 1;
 }
 
-.calendar-cell:focus {
+.calendar-cell:focus,
+.return-date-picker .calendar-cell:focus {
   outline: none;
 }
 
-.date {
+.date,
+.return-date-picker .date {
   font-weight: 700;
   font-size: 1rem;
   color: var(--text-primary);
 }
 
-.price {
+.price,
+.return-date-picker .price {
   font-size: 0.875rem;
   font-weight: 700;
   color: var(--text-primary);
@@ -251,7 +258,8 @@ h1 {
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 
-.flight-times {
+.flight-times,
+.return-date-picker .flight-times {
   font-size: 0.75rem;
   color: var(--text-secondary);
   margin-top: 0.25rem;
@@ -632,6 +640,11 @@ h1, h2, h3 {
   border-radius: 1.5rem;
   box-shadow: 0 8px 32px var(--shadow-color);
   margin-bottom: 2rem;
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Specific adjustments for calendar components */
@@ -691,87 +704,83 @@ h1, h2, h3 {
 
 /* Calendar container styling */
 .calendar-container {
-  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
 }
 
-.calendar-nav {
-  background: #4a556824;
-  backdrop-filter: blur(var(--backdrop-blur));
-  -webkit-backdrop-filter: blur(var(--backdrop-blur));
-  border: 1px solid var(--glass-border);
-  padding: 1.5rem;
-  border-top-left-radius: 1.5rem;
-  border-top-right-radius: 1.5rem;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  box-shadow: 0 8px 32px var(--shadow-color);
-  margin-bottom: 0;
-  border-bottom: none;
+/* Calendar grid styles */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.calendar {
-  background: #4a556824;
-  backdrop-filter: blur(var(--backdrop-blur));
-  -webkit-backdrop-filter: blur(var(--backdrop-blur));
-  border: 1px solid var(--glass-border);
-  padding: 1.5rem;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  border-bottom-left-radius: 1.5rem;
-  border-bottom-right-radius: 1.5rem;
-  box-shadow: 0 8px 32px var(--shadow-color);
-  margin-top: 0;
+/* Calendar cell styles */
+.calendar-cell {
+  min-height: 80px;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
-  .calendar-nav {
-    padding: 1rem;
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
+  .calendar-container {
+    padding: 0.5rem;
   }
-  
-  .calendar {
-    padding: 1rem;
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
+
+  .calendar-cell {
+    min-height: 60px;
+    padding: 0.25rem;
+    font-size: 0.75rem;
+  }
+
+  .calendar-cell .date {
+    font-size: 0.7rem;
+  }
+
+  .calendar-cell .price {
+    font-size: 0.65rem;
+  }
+
+  .calendar-cell .flight-times {
+    font-size: 0.6rem;
   }
 }
 
-/* Specific styling for passenger section labels */
-.passenger-controls label {
+/* Very small screens */
+@media (max-width: 480px) {
+  .calendar-cell {
+    min-height: 50px;
+    padding: 0.2rem;
+  }
+
+  .calendar-cell .date,
+  .calendar-cell .price,
+  .calendar-cell .flight-times {
+    font-size: 0.6rem;
+  }
+}
+
+/* Default styles for flight times */
+.flight-times {
   font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
 }
 
-/* Main section labels (From, To, Month, Currency) */
-.controls > .control-group > label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  opacity: 0.9;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-/* Booking Options title */
-.booking-controls h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 1.5rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-/* Passengers section title */
-.booking-controls .passenger-controls > label {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-  letter-spacing: 0.05em;
+/* Responsive adjustments for small screens */
+@media (max-width: 620px) {
+  .flight-times .arrival {
+    display: none;
+  }
 }

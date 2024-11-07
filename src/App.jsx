@@ -3,6 +3,9 @@ import './App.css';
 import Calendar from './components/Calendar';
 import ReturnDatePicker from './components/ReturnDatePicker';
 import RecommendedFlights from './components/RecommendedFlights';
+import PriceHistory from './components/PriceHistory';
+import BaggageCalculator from './components/BaggageCalculator';
+import WeatherForecast from './components/WeatherForecast';
 import moment from 'moment';
 
 function App() {
@@ -238,8 +241,8 @@ function App() {
         teens: bookingParams.teens.toString(),
         children: bookingParams.children.toString(),
         infants: bookingParams.infants.toString(),
-        dateOut: isReturn ? searchParams.date : date,
-        ...(isReturn && { dateIn: date }),
+        dateOut: moment(isReturn ? searchParams.date : date).format('YYYY-MM-DD'),
+        ...(isReturn && { dateIn: moment(date).format('YYYY-MM-DD') }),
         isConnectedFlight: 'false',
         isReturn: bookingParams.isReturn.toString(),
         discount: '0',
@@ -251,8 +254,8 @@ function App() {
         tpTeens: bookingParams.teens.toString(),
         tpChildren: bookingParams.children.toString(),
         tpInfants: bookingParams.infants.toString(),
-        tpStartDate: isReturn ? searchParams.date : date,
-        ...(isReturn && { tpEndDate: date }),
+        tpStartDate: moment(isReturn ? searchParams.date : date).format('YYYY-MM-DD'),
+        ...(isReturn && { tpEndDate: moment(date).format('YYYY-MM-DD') }),
         tpDiscount: '0',
         tpPromoCode: '',
         tpOriginIata: searchParams.origin,
@@ -263,7 +266,7 @@ function App() {
       window.open(bookingUrl, '_blank');
     } else {
       // If return is enabled but this is the outbound flight, just set the date
-      handleParamChange('date', date);
+      handleParamChange('date', moment(date).format('YYYY-MM-DD'));
     }
   };
 
@@ -340,6 +343,12 @@ function App() {
     
     // For single flights
     return { outbound: cheapestOutbound };
+  };
+
+  // First, get the selected flight from the flight data
+  const getSelectedFlight = () => {
+    if (!flightData?.outbound?.fares) return null;
+    return flightData.outbound.fares.find(fare => fare.day === searchParams.date);
   };
 
   if (loading) return <div className="loading">Loading flights...</div>;
@@ -536,17 +545,20 @@ function App() {
         recommendation={findCheapestFlights()}
         formatPrice={formatPrice}
         formatTime={formatTime}
-        onSelect={(recommendation) => {
-          handleParamChange('date', recommendation.outbound.day);
-          if (recommendation.return) {
-            handleBookingParamChange('dateIn', recommendation.return.day);
-            handleFlightSelect(recommendation.outbound.day, recommendation.outbound);
-            handleFlightSelect(recommendation.return.day, recommendation.return, true);
-          } else {
-            handleFlightSelect(recommendation.outbound.day, recommendation.outbound);
-          }
-        }}
+        onSelect={handleFlightSelect}
       />
+
+      <BaggageCalculator />
+
+      <WeatherForecast 
+        destination={searchParams.destination}
+        date={searchParams.date}
+        arrivalTime={getSelectedFlight()?.arrivalDate 
+          ? moment(getSelectedFlight().arrivalDate).format('HH:mm') 
+          : "12:00"} // Default to noon if no arrival time
+      />
+
+      <PriceHistory flightData={flightData} />
 
       <div className="legend">
         <div className="legend-item">

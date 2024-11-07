@@ -80,7 +80,8 @@ const Calendar = ({ flightData, currentDate, onDateSelect, onFlightSelect, isRet
                   <div className="price">{formatPrice(fare.price)}</div>
                   {fare.departureDate && (
                     <div className="flight-times">
-                      {formatTime(fare.departureDate)} - {formatTime(fare.arrivalDate)}
+                      <span className="departure">{formatTime(fare.departureDate)}</span>
+                      <span className="arrival"> - {formatTime(fare.arrivalDate)}</span>
                     </div>
                   )}
                 </>

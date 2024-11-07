@@ -4,6 +4,26 @@ import moment from 'moment';
 const RecommendedFlights = ({ recommendation, formatPrice, formatTime, onSelect }) => {
   if (!recommendation) return null;
 
+  const handleSelectFlights = () => {
+    // First select the outbound flight
+    onSelect(recommendation.outbound.day, recommendation.outbound);
+
+    // If it's a return flight, select it after a short delay
+    // This ensures the outbound is processed first
+    if (recommendation.return) {
+      setTimeout(() => {
+        onSelect(recommendation.return.day, recommendation.return, true);
+      }, 100);
+    }
+  };
+
+  // Calculate total price only if all price values exist
+  const totalPrice = recommendation.outbound?.price && {
+    value: recommendation.outbound.price.value + (recommendation.return?.price?.value || 0),
+    currencySymbol: recommendation.outbound.price.currencySymbol,
+    currencyCode: recommendation.outbound.price.currencyCode
+  };
+
   return (
     <div className="recommended-flights">
       <h3>💡 Cheapest {recommendation.return ? 'Return' : 'Single'} Flight Option</h3>
@@ -36,13 +56,13 @@ const RecommendedFlights = ({ recommendation, formatPrice, formatTime, onSelect 
           </>
         )}
       </div>
-      {recommendation.totalPrice && (
+      {totalPrice && (
         <div className="total-price">
-          Total: {formatPrice({ ...recommendation.outbound.price, value: recommendation.totalPrice })}
+          Total: {formatPrice(totalPrice)}
         </div>
       )}
-      <button onClick={() => onSelect(recommendation)} className="select-flights">
-        Select {recommendation.return ? 'These Flights' : 'This Flight'}
+      <button className="select-flights" onClick={handleSelectFlights}>
+        Select Flights
       </button>
     </div>
   );
