@@ -57,7 +57,9 @@ function App() {
   }, [bookingParams.isReturn, searchParams.origin, searchParams.destination, searchParams.date, searchParams.currency]);
 
   useEffect(() => {
-    fetchWeatherData(searchParams.destination, searchParams.date);
+    if (searchParams.destination) {
+      fetchWeatherData(searchParams.destination, searchParams.date);
+    }
   }, [searchParams.destination, searchParams.date]);
 
   const fetchFlightData = async () => {
@@ -168,37 +170,28 @@ function App() {
 
   const fetchWeatherData = async (destination, date) => {
     try {
-      // Find the destination city name from the destinations array
-      const destinationCity = destinations.find(airport => 
-        airport.code === destination
-      )?.city || destination;
+      // Find the destination details from the destinations array
+      const destinationDetails = destinations.find(airport => airport.code === destination);
+      
+      if (!destinationDetails?.city) {
+        console.error('City not found for airport code:', destination);
+        setWeatherData(null);
+        return;
+      }
 
+      // Use the city name instead of airport code
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${destinationCity}&appid=4a832ba19efef92fa016634d4ec736eb&units=metric`
+        `https://api.openweathermap.org/data/2.5/weather?q=${destinationDetails.city}&appid=4a832ba19efef92fa016634d4ec736eb&units=metric`
       );
       const data = await response.json();
       
-      // Check if the API returned an error
       if (data.cod && data.cod !== 200) {
         console.error('Weather API error:', data.message);
         setWeatherData(null);
         return;
       }
       
-      setWeatherData({
-        main: {
-          temp: data.main?.temp,
-          feels_like: data.main?.feels_like,
-          humidity: data.main?.humidity
-        },
-        wind: {
-          speed: data.wind?.speed
-        },
-        weather: [{
-          description: data.weather?.[0]?.description || 'No description available',
-          icon: data.weather?.[0]?.icon || '01d'
-        }]
-      });
+      setWeatherData(data);
     } catch (error) {
       console.error('Error fetching weather data:', error);
       setWeatherData(null);

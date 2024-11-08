@@ -3,10 +3,31 @@ import './Weather.css';
 import moment from 'moment';
 
 const WeatherForecast = ({ destination, date, weatherData }) => {
-  // Early return if no weather data
-  if (!weatherData || !weatherData.main) return null;
+  if (!destination || !date) {
+    return (
+      <div className="weather-widget">
+        <p>Select a destination and date to see weather forecast</p>
+      </div>
+    );
+  }
 
-  // Safely destructure the weather data with default values
+  if (!weatherData) {
+    return (
+      <div className="weather-widget">
+        <p>Loading weather data...</p>
+      </div>
+    );
+  }
+
+  if (!weatherData.main) {
+    return (
+      <div className="weather-widget">
+        <p>Unable to load weather data for {destination}</p>
+      </div>
+    );
+  }
+
+  // Rest of your component code...
   const {
     main: { 
       temp = 'N/A', 
@@ -18,7 +39,7 @@ const WeatherForecast = ({ destination, date, weatherData }) => {
     } = {},
     weather: [{ 
       description = 'No data available', 
-      icon = '01d' // default icon
+      icon = '01d'
     } = {}] = [{}]
   } = weatherData;
 
