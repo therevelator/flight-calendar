@@ -4,7 +4,6 @@ import Calendar from './components/Calendar';
 import ReturnDatePicker from './components/ReturnDatePicker';
 import RecommendedFlights from './components/RecommendedFlights';
 import PriceHistory from './components/PriceHistory';
-import BaggageCalculator from './components/BaggageCalculator';
 import WeatherForecast from './components/WeatherForecast';
 import moment from 'moment';
 
@@ -31,6 +30,7 @@ function App() {
     dateIn: '' // For return flights
   });
   const [returnFlightData, setReturnFlightData] = useState(null);
+  const [weatherData, setWeatherData] = useState(null);
 
   const currencies = [
     { code: 'EUR', symbol: '€' },
@@ -55,6 +55,10 @@ function App() {
       fetchReturnFlights(searchParams.date);
     }
   }, [bookingParams.isReturn, searchParams.origin, searchParams.destination, searchParams.date, searchParams.currency]);
+
+  useEffect(() => {
+    fetchWeatherData(searchParams.destination, searchParams.date);
+  }, [searchParams.destination, searchParams.date]);
 
   const fetchFlightData = async () => {
     setLoading(true);
@@ -159,6 +163,45 @@ function App() {
     } catch (error) {
       console.error('Error fetching return flights:', error);
       setReturnFlightData(null);
+    }
+  };
+
+  const fetchWeatherData = async (destination, date) => {
+    try {
+      // Find the destination city name from the destinations array
+      const destinationCity = destinations.find(airport => 
+        airport.code === destination
+      )?.city || destination;
+
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${destinationCity}&appid=4a832ba19efef92fa016634d4ec736eb&units=metric`
+      );
+      const data = await response.json();
+      
+      // Check if the API returned an error
+      if (data.cod && data.cod !== 200) {
+        console.error('Weather API error:', data.message);
+        setWeatherData(null);
+        return;
+      }
+      
+      setWeatherData({
+        main: {
+          temp: data.main?.temp,
+          feels_like: data.main?.feels_like,
+          humidity: data.main?.humidity
+        },
+        wind: {
+          speed: data.wind?.speed
+        },
+        weather: [{
+          description: data.weather?.[0]?.description || 'No description available',
+          icon: data.weather?.[0]?.icon || '01d'
+        }]
+      });
+    } catch (error) {
+      console.error('Error fetching weather data:', error);
+      setWeatherData(null);
     }
   };
 
@@ -548,17 +591,17 @@ function App() {
         onSelect={handleFlightSelect}
       />
 
-      <BaggageCalculator />
+      <div className="weather-container">
+        <WeatherForecast 
+          destination={searchParams.destination}
+          date={searchParams.date}
+          weatherData={weatherData}
+        />
+      </div>
 
-      <WeatherForecast 
-        destination={searchParams.destination}
-        date={searchParams.date}
-        arrivalTime={getSelectedFlight()?.arrivalDate 
-          ? moment(getSelectedFlight().arrivalDate).format('HH:mm') 
-          : "12:00"} // Default to noon if no arrival time
-      />
-
-      <PriceHistory flightData={flightData} />
+      <div className="price-history-container">
+        <PriceHistory flightData={flightData} />
+      </div>
 
       <div className="legend">
         <div className="legend-item">

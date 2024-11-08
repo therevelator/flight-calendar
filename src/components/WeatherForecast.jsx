@@ -1,112 +1,84 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import './Weather.css';
 import moment from 'moment';
 
-const WeatherForecast = ({ destination, date, arrivalTime }) => {
-  const [weather, setWeather] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+const WeatherForecast = ({ destination, date, weatherData }) => {
+  // Early return if no weather data
+  if (!weatherData || !weatherData.main) return null;
 
-  const cityMap = {
-    'DUB': 'Dublin,IE',
-    'OTP': 'Bucharest,RO',
-    'STN': 'London,UK',
-    'BGY': 'Milan,IT'
-  };
-
-  useEffect(() => {
-    const fetchWeather = async () => {
-      if (!destination || !cityMap[destination]) return;
-      
-      setLoading(true);
-      setError(null);
-      
-      try {
-        const response = await fetch(
-          `https://api.openweathermap.org/data/2.5/forecast?q=${cityMap[destination]}&appid=4a832ba19efef92fa016634d4ec736eb&units=metric`
-        );
-        
-        if (!response.ok) throw new Error('Weather data not available');
-        
-        const data = await response.json();
-        setWeather(data);
-      } catch (err) {
-        setError('Could not load weather data');
-        console.error('Weather fetch error:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchWeather();
-  }, [destination]);
-
-  if (loading) return <div className="weather-forecast">Loading weather...</div>;
-  if (error) return <div className="weather-forecast">{error}</div>;
-  if (!weather) return null;
-
-  // Find forecast closest to arrival time
-  const arrivalDateTime = moment(`${date} ${arrivalTime}`, 'YYYY-MM-DD HH:mm');
-  const selectedDateForecast = weather.list.reduce((closest, forecast) => {
-    const forecastTime = moment(forecast.dt * 1000);
-    const currentDiff = Math.abs(arrivalDateTime.diff(forecastTime));
-    const closestDiff = Math.abs(arrivalDateTime.diff(moment(closest.dt * 1000)));
-    return currentDiff < closestDiff ? forecast : closest;
-  }, weather.list[0]);
-
-  const getWeatherIcon = (code) => {
-    const iconMap = {
-      '01d': '☀️',  // clear sky day
-      '01n': '🌙',  // clear sky night
-      '02d': '⛅',  // few clouds day
-      '02n': '☁️',  // few clouds night
-      '03d': '☁️',  // scattered clouds
-      '03n': '☁️',  // scattered clouds
-      '04d': '☁️',  // broken clouds
-      '04n': '☁️',  // broken clouds
-      '09d': '🌧️',  // shower rain
-      '09n': '🌧️',  // shower rain
-      '10d': '🌦️',  // rain day
-      '10n': '🌧️',  // rain night
-      '11d': '⛈️',  // thunderstorm
-      '11n': '⛈️',  // thunderstorm
-      '13d': '🌨️',  // snow
-      '13n': '🌨️',  // snow
-      '50d': '🌫️',  // mist
-      '50n': '🌫️',  // mist
-    };
-    return iconMap[code] || '🌡️';
-  };
-
-  const arrivalTimeFormatted = moment(selectedDateForecast.dt * 1000).format('HH:mm');
+  // Safely destructure the weather data with default values
+  const {
+    main: { 
+      temp = 'N/A', 
+      feels_like = 'N/A', 
+      humidity = 'N/A' 
+    } = {},
+    wind: { 
+      speed: wind_speed = 'N/A' 
+    } = {},
+    weather: [{ 
+      description = 'No data available', 
+      icon = '01d' // default icon
+    } = {}] = [{}]
+  } = weatherData;
 
   return (
-    <div className="weather-forecast">
-      <h3>Weather at Arrival in {weather.city.name}</h3>
-      <div className="arrival-time">Expected arrival: {arrivalTimeFormatted}</div>
-      <div className="weather-content">
-        <div className="weather-main">
-          <div className="weather-icon">
-            {getWeatherIcon(selectedDateForecast.weather[0].icon)}
-          </div>
-          <div className="temperature">
-            {Math.round(selectedDateForecast.main.temp)}°C
-          </div>
-          <div className="description">
-            {selectedDateForecast.weather[0].description}
-          </div>
+    <div className="weather-widget">
+      <div className="weather-icon-section">
+        <img 
+          src={`https://openweathermap.org/img/wn/${icon}@4x.png`}
+          alt={description}
+          className="weather-icon"
+        />
+        <div className="weather-temp">
+          {typeof temp === 'number' ? `${Math.round(temp)}°C` : 'N/A'}
         </div>
+        <div className="weather-description">
+          {description}
+        </div>
+      </div>
+
+      <div className="weather-content">
+        <div className="location-info">
+          <h3>{destination}</h3>
+          <span className="date">{moment(date).format('MMM D, YYYY')}</span>
+        </div>
+
         <div className="weather-details">
           <div className="weather-detail">
-            <span>💧 Humidity</span>
-            <span>{selectedDateForecast.main.humidity}%</span>
+            <svg className="weather-detail-icon" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M15 13V5A3 3 0 0 0 9 5V13A5 5 0 1 0 15 13M12 4A1 1 0 0 1 13 5V8H11V5A1 1 0 0 1 12 4Z" />
+            </svg>
+            <div className="weather-detail-info">
+              <span className="weather-detail-label">Feels Like</span>
+              <span className="weather-detail-value">
+                {typeof feels_like === 'number' ? `${Math.round(feels_like)}°C` : 'N/A'}
+              </span>
+            </div>
           </div>
+
           <div className="weather-detail">
-            <span>💨 Wind</span>
-            <span>{Math.round(selectedDateForecast.wind.speed * 3.6)} km/h</span>
+            <svg className="weather-detail-icon" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M12,2A7,7 0 0,0 5,9C5,11.38 6.19,13.47 8,14.74V17A1,1 0 0,0 9,18H15A1,1 0 0,0 16,17V14.74C17.81,13.47 19,11.38 19,9A7,7 0 0,0 12,2M9,21V20H15V21A1,1 0 0,1 14,22H10A1,1 0 0,1 9,21" />
+            </svg>
+            <div className="weather-detail-info">
+              <span className="weather-detail-label">Humidity</span>
+              <span className="weather-detail-value">
+                {typeof humidity === 'number' ? `${humidity}%` : 'N/A'}
+              </span>
+            </div>
           </div>
+
           <div className="weather-detail">
-            <span>🌡️ Feels like</span>
-            <span>{Math.round(selectedDateForecast.main.feels_like)}°C</span>
+            <svg className="weather-detail-icon" viewBox="0 0 24 24">
+              <path fill="currentColor" d="M4,10A1,1 0 0,1 3,9A1,1 0 0,1 4,8H12A2,2 0 0,0 14,6A2,2 0 0,0 12,4C11.45,4 10.95,4.22 10.59,4.59C10.2,5 9.56,5 9.17,4.59C8.78,4.2 8.78,3.56 9.17,3.17C9.9,2.45 10.9,2 12,2A4,4 0 0,1 16,6A4,4 0 0,1 12,10H4M19,12A1,1 0 0,0 20,11A1,1 0 0,0 19,10C18.72,10 18.47,10.11 18.29,10.29C17.9,10.68 17.27,10.68 16.88,10.29C16.5,9.9 16.5,9.27 16.88,8.88C17.42,8.34 18.17,8 19,8A3,3 0 0,1 22,11A3,3 0 0,1 19,14H5A1,1 0 0,1 4,13A1,1 0 0,1 5,12H19M18,18H4A1,1 0 0,1 3,17A1,1 0 0,1 4,16H18A3,3 0 0,1 21,19A3,3 0 0,1 18,22C17.17,22 16.42,21.66 15.88,21.12C15.5,20.73 15.5,20.1 15.88,19.71C16.27,19.32 16.9,19.32 17.29,19.71C17.47,19.89 17.72,20 18,20A1,1 0 0,0 19,19A1,1 0 0,0 18,18Z" />
+            </svg>
+            <div className="weather-detail-info">
+              <span className="weather-detail-label">Wind Speed</span>
+              <span className="weather-detail-value">
+                {typeof wind_speed === 'number' ? `${Math.round(wind_speed)} km/h` : 'N/A'}
+              </span>
+            </div>
           </div>
         </div>
       </div>

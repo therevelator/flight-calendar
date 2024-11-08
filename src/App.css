@@ -784,3 +784,51 @@ h1, h2, h3 {
     display: none;
   }
 }
+
+.weather-container {
+  background: #4a556824;
+  backdrop-filter: blur(var(--backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  padding: 1.5rem;
+  margin: 2rem 0;
+  width: 100%;
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .weather-container {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 1rem;
+  }
+}
+
+.price-history-container {
+  background: #4a556824;
+  backdrop-filter: blur(var(--backdrop-blur));
+  -webkit-backdrop-filter: blur(var(--backdrop-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 32px var(--shadow-color);
+  padding: 1.5rem;
+  margin: 2rem 0;
+  width: 100%;
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .price-history-container {
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 1rem;
+  }
+}
